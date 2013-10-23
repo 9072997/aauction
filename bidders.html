@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Bidders</title>
+    </head>
+    <body>
+        <div onkeydown="if(event.keyCode == 13) { addUpdate(); document.getElementById('name').focus(); }">
+            Id:<input type="text" id="id" /><br />
+            Name:<input type="text" id="name" /><br />
+            Address:<input type="text" id="address" /><br />
+            Online:<input type="text" id="online" /><br />
+            <input type="submit" value="ADD / UPDATE" onclick="addUpdate();"/>
+        </div>
+        <div id="bidders"></div>
+        <script>
+            if (window.XMLHttpRequest) {
+                request = new XMLHttpRequest();
+            } else {
+                request = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            
+            request.onreadystatechange = function() {
+                if(request.readyState==4) {
+                    if(request.status==200) {
+                        document.getElementById('bidders').innerHTML = '<table border="1"><caption>Bidders</caption><thead><tr><th>Id</th><th>Name</th><th>Online</th><th>Total</th><th>Address</th></tr></thead><tbody>' + request.responseText + '</tbody></table>';
+                    }
+                    setTimeout(function(){
+                        request.open('GET', 'bidders.php', true);
+                        request.send();
+                    }, 2000);
+                }
+            }
+            
+            request.open('GET', 'bidders.php', true);
+            request.send();
+            
+            function del(id) {
+                if(confirm('Delete bidder ' + id)) {
+                    var request;
+                    if (window.XMLHttpRequest) {
+                        request = new XMLHttpRequest();
+                    } else {
+                        request = new ActiveXObject('Microsoft.XMLHTTP');
+                    }
+                    
+                    request.open('GET', 'bidder.php?delete=' + id, true);
+                    request.send();
+                }
+            }
+            
+            function addUpdate() {
+                var request;
+                if (window.XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                } else {
+                    request = new ActiveXObject('Microsoft.XMLHTTP');
+                }
+                
+                request.open('GET',
+                            'bidder.php?id=' + document.getElementById('id').value +
+                            '&name=' + document.getElementById('name').value +
+                            '&online=' + document.getElementById('online').value +
+                            '&address=' + document.getElementById('address').value,
+                            true);
+                request.send();
+                
+                document.getElementById('id').value = '';
+                document.getElementById('name').value = '';
+                document.getElementById('online').value = '';
+                document.getElementById('address').value = '';
+            }
+        </script>
+    </body>
+</html>

@@ -5,12 +5,14 @@
         <title>Items</title>
     </head>
     <body>
+    Center:<input type="text" id="center" /><br />
         <div onkeydown="if(event.keyCode == 13) { addUpdate(); document.getElementById('id').focus(); }">
-            Id:<input type="text" id="id" />
-            First:<input type="text" id="first" />
-            Last:<input type="text" id="last" />
-            Price:<input type="text" id="price" />
-            Item:<input type="text" id="item" disabled />
+            Id:<input type="text" id="id" /><br />
+            Bidder:<input type="text" id="bidder" /><br />
+            Price:<input type="text" id="price" /><br />
+            Item:<input type="text" id="item" /><br />
+            ImgId:<input type="text" id="imgid" /><br />
+            Descrip:<input type="text" id="descrip" /><br />
             <input type="submit" value="ADD / UPDATE" onclick="addUpdate();"/>
         </div>
         <div id="items"></div>
@@ -24,19 +26,31 @@
             request.onreadystatechange = function() {
                 if(request.readyState==4) {
                     if(request.status==200) {
-                        document.getElementById('items').innerHTML = '<table border="1"><caption>Items</caption><thead><tr><th>Id</th><th>Last</th><th>First</th><th>Total</th><th>Item</th><th>Price</th></tr></thead><tbody>' + request.responseText + '</tbody></table>';
+                        document.getElementById('items').innerHTML = '<table border="1"><caption>Items</caption><thead><tr><th>Id</th><th>Item</th><th>ImgId</th><th>Descrip</th><th>Bidder</th><th>Price</th><th>Updated</th><th>Center</th></tr></thead><tbody>' + request.responseText + '</tbody></table>';
                     }
                     setTimeout(function(){
-                        request.open('GET', 'items.php', true);
+                        request.open('GET', 'items.php?center=' + document.getElementById('center').value, true);
                         request.send();
-                    }, 10000);
+                    }, 2000);
                 }
             }
             
-            request.open('GET', 'items.php', true);
+            request.open('GET', 'items.php?center=' + document.getElementById('center').value, true);
             request.send();
             
-            function del(id) {}
+            function del(id) {
+                if(confirm('Delete item ' + id)) {
+                    var request;
+                    if (window.XMLHttpRequest) {
+                        request = new XMLHttpRequest();
+                    } else {
+                        request = new ActiveXObject('Microsoft.XMLHTTP');
+                    }
+                    
+                    request.open('GET', 'item.php?delete=' + id, true);
+                    request.send();
+                }
+            }
             
             function addUpdate() {
                 var request;
@@ -48,17 +62,20 @@
                 
                 request.open('GET',
                             'item.php?id=' + document.getElementById('id').value +
-                            '&last=' + document.getElementById('last').value +
-                            '&first=' + document.getElementById('first').value +
                             '&item=' + document.getElementById('item').value +
-                            '&price=' + document.getElementById('price').value,
+                            '&imgid=' + document.getElementById('imgid').value +
+                            '&descrip=' + document.getElementById('descrip').value +
+                            '&bidder=' + document.getElementById('bidder').value +
+                            '&price=' + document.getElementById('price').value +
+                            '&center=' + document.getElementById('center').value,
                             true);
                 request.send();
                 
                 document.getElementById('id').value = '';
-                document.getElementById('last').value = '';
-                document.getElementById('first').value = '';
                 document.getElementById('item').value = '';
+                document.getElementById('imgid').value = '';
+                document.getElementById('descrip').value = '';
+                document.getElementById('bidder').value = '';
                 document.getElementById('price').value = '';
             }
         </script>

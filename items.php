@@ -1,35 +1,38 @@
 <?php
-    function rie($string) {
-        return strlen($string) ? $string : '&nbsp';
+    function rie($val) {
+        return isset($val) && strlen($val) ? $val : '&nbsp';
     }
     
     header("Cache-Control: no-cache, must-revalidate");
     header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
     
+    require_once('auth.inc.php');
     require_once('db.inc.php');
-    $items=db('SELECT id, last, first, item, price FROM items ORDER BY last, first, price, id;');
+    $items=(isset($_GET['center']) && strlen(($_GET['center'])) ?
+        db('SELECT id, item, imgid, descrip, bidder, price, updated, center FROM items WHERE center=? ORDER BY updated NULLS FIRST;', $_GET['center'])
+    :
+        db('SELECT id, item, imgid, descrip, bidder, price, updated, center FROM items ORDER BY updated NULLS FIRST;')
+    );
     foreach($items as $item) {
         echo '<tr onclick="del(' . rie($item->id) . ');">' .
             '<th>' . rie($item->id) . '</th>' .
-            '<td>' . rie($item->last) . '</td>' .
-            '<td>' . rie($item->first) . '</td>' .
-            '<td>' . 
-                (isset($item->last) ? 
-                    (isset($item->first) ? 
-                        '$' . number_format(db1('SELECT SUM(price) FROM items WHERE last=? AND first=?;', $item->last, $item->first)->sum/100, 2)
+            '<th>' . rie($item->item) . '</th>' .
+            '<td>' . (isset($item->imgid) ? '<img src="art/' . $item->imgid . '.png" style="height: 50px;" />' : '&nbsp') . '</td>' .
+            '<td>' . rie($item->descrip) . '</td>' .
+            '<td>' . (
+                isset($item->bidder) ? 
+                    $item->bidder . (
+                    is_null($name=db1('SELECT name FROM bidders WHERE id=?;', $item->bidder)->name) ? 
+                        ''
                     :
-                        '$' . number_format(db1('SELECT SUM(price) FROM items WHERE last=?;', $item->last)->sum/100, 2)
+                        '(' . $name . ')'
                     )
                 :
-                    (isset($item->first) ? 
-                        '$' . number_format(db1('SELECT SUM(price) FROM items WHERE first=?;', $item->first)->sum/100, 2)
-                    :
-                        '&nbsp'
-                    )
-                ) .
-            '</td>' .
-            '<td>' . rie($item->item) . '</td>' .
+                    '&nbsp'
+            ) . '</td>' .
             '<td>' . (isset($item->price) ? '$' . number_format($item->price/100, 2) : '&nbsp') . '</td>' .
+            '<td class="hidden">' . rie($item->updated) . '</td>' .
+            '<td class="hidden">' . rie($item->center) . '</td>' .
         '</tr>';
     }
 ?>

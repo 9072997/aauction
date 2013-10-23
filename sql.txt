@@ -1,7 +1,18 @@
 CREATE TABLE items (
 	id SERIAL PRIMARY KEY,
 	item VARCHAR(255) NOT NULL,
-	first VARCHAR(255),
-	last VARCHAR(255),
-	price INT
+	imgid INT,
+	descrip TEXT,
+	bidder INT,
+	price INT,
+	updated TIMESTAMP,
+	center INT
+);
+
+CREATE TABLE bidders (
+	id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+	online BOOLEAN,
+	address TEXT,
+	code VARCHAR(255) UNIQUE
 );
