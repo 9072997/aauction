@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Items</title>
+    </head>
+    <body>
+        <div onkeydown="if(event.keyCode == 13) { addUpdate(); document.getElementById('id').focus(); }">
+            Id:<input type="text" id="id" />
+            First:<input type="text" id="first" />
+            Last:<input type="text" id="last" />
+            Price:<input type="text" id="price" />
+            Item:<input type="text" id="item" disabled />
+            <input type="submit" value="ADD / UPDATE" onclick="addUpdate();"/>
+        </div>
+        <div id="items"></div>
+        <script>
+            if (window.XMLHttpRequest) {
+                request = new XMLHttpRequest();
+            } else {
+                request = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            
+            request.onreadystatechange = function() {
+                if(request.readyState==4) {
+                    if(request.status==200) {
+                        document.getElementById('items').innerHTML = '<table border="1"><caption>Items</caption><thead><tr><th>Id</th><th>Last</th><th>First</th><th>Total</th><th>Item</th><th>Price</th></tr></thead><tbody>' + request.responseText + '</tbody></table>';
+                    }
+                    setTimeout(function(){
+                        request.open('GET', 'items.php', true);
+                        request.send();
+                    }, 10000);
+                }
+            }
+            
+            request.open('GET', 'items.php', true);
+            request.send();
+            
+            function del(id) {}
+            
+            function addUpdate() {
+                var request;
+                if (window.XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                } else {
+                    request = new ActiveXObject('Microsoft.XMLHTTP');
+                }
+                
+                request.open('GET',
+                            'item.php?id=' + document.getElementById('id').value +
+                            '&last=' + document.getElementById('last').value +
+                            '&first=' + document.getElementById('first').value +
+                            '&item=' + document.getElementById('item').value +
+                            '&price=' + document.getElementById('price').value,
+                            true);
+                request.send();
+                
+                document.getElementById('id').value = '';
+                document.getElementById('last').value = '';
+                document.getElementById('first').value = '';
+                document.getElementById('item').value = '';
+                document.getElementById('price').value = '';
+            }
+        </script>
+    </body>
+</html>

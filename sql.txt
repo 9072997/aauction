@@ -1,0 +1,7 @@
+CREATE TABLE items (
+	id SERIAL PRIMARY KEY,
+	item VARCHAR(255) NOT NULL,
+	first VARCHAR(255),
+	last VARCHAR(255),
+	price INT
+);
